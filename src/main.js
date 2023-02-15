@@ -29,7 +29,7 @@ const light = new THREE.AmbientLight(0xFFFFFF); // soft white light
 scene.add(light);
 
 const world = new CANNON.World({
-  gravity: new CANNON.Vec3(0, -0.1, 0), // m/s²
+  gravity: new CANNON.Vec3(0, -10, 0), // m/s²
 })
 
 const renderer = new THREE.WebGLRenderer();
@@ -54,9 +54,9 @@ const material1 = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 const sphere = new THREE.Mesh( geometry1, material1 );
 scene.add( sphere );
 
-const radius = 1
+const radius = 0.2
 const sphereShape = new CANNON.Sphere(radius)
-const sphereBody = new CANNON.Body({ mass: 1, shape: sphereShape })
+const sphereBody = new CANNON.Body({ mass: 0.1, shape: sphereShape })
 world.addBody( sphereBody );
 
 
@@ -66,13 +66,13 @@ const height = 1
 const numSegments = 10
 
 const cylinderShape = new CANNON.Cylinder(radiusTop, radiusBottom, height, numSegments)
-const cylinderBody1 = new CANNON.Body({ mass: 1, shape: cylinderShape })
+const cylinderBody1 = new CANNON.Body({ mass: 0.0001, shape: cylinderShape })
 world.addBody(cylinderBody1)
 
-const cylinderBody2 = new CANNON.Body({ mass: 1, shape: cylinderShape })
+const cylinderBody2 = new CANNON.Body({ mass: 0.0001, shape: cylinderShape })
 world.addBody(cylinderBody2)
 
-const cylinderBody3 = new CANNON.Body({ mass: 1, shape: cylinderShape })
+const cylinderBody3 = new CANNON.Body({ mass: 0.0001, shape: cylinderShape })
 world.addBody(cylinderBody3)
 
 
@@ -126,6 +126,10 @@ cylinderBody2.position.set(Cposition[1].x,Cposition[1].y,Cposition[1].z);
 cylinderBody3.position.set(Cposition[2].x,Cposition[2].y,Cposition[2].z);
 sphereBody.position.set(0.5,10,4);
 
+
+
+sphereBody.applyImpulse(new THREE.Vector3(0,0,-0.001), sphereBody.position)
+
  // Main loop
 const animation = () => {
 
@@ -133,7 +137,10 @@ const animation = () => {
 
   const delta = clock.getDelta();
   const elapsed = clock.getElapsedTime();
-  world.step(delta)
+  if (delta != 0) {
+    world.step(delta);
+  }
+//  world.step(delta)
 
   // can be used in shaders: uniforms.u_time.value = elapsed;
 
@@ -194,7 +201,7 @@ const animation = () => {
     sphereBody.quaternion.z,
     sphereBody.quaternion.w
   );
-console.log('sphere position', sphere.position)
+console.log( sphere)
   world.fixedStep();
   renderer.render(scene, camera);
 };
